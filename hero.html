@@ -7,20 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
   <style>
-    /* Reset and base styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
+    .hero-root {
       background-color: #fff;
       color: #1a1f36;
       line-height: 1.6;
@@ -28,10 +15,17 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
-
-    /* Header styles */
-    header {
+    .hero-root * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    .hero-root header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -41,26 +35,22 @@
       max-width: 1280px;
       height: 60px;
     }
-
-    .logo {
+    .hero-root .logo {
       font-weight: 700;
       font-size: 1.5rem;
       color: #0a2540;
     }
-
-    nav {
+    .hero-root nav {
       display: flex;
       gap: 1.5rem;
     }
-
-    nav a {
+    .hero-root nav a {
       text-decoration: none;
       color: #0a2540;
       font-weight: 500;
       position: relative;
     }
-
-    nav a:after {
+    .hero-root nav a:after {
       content: '';
       position: absolute;
       width: 100%;
@@ -71,45 +61,36 @@
       transform: scaleX(0);
       transition: transform 0.3s;
     }
-
-    nav a:hover:after {
+    .hero-root nav a:hover:after {
       transform: scaleX(1);
     }
-
-    .cta-buttons {
+    .hero-root .cta-buttons {
       display: flex;
       gap: 0.75rem;
     }
-
-    .btn {
+    .hero-root .btn {
       padding: 0.5rem 1rem;
       border-radius: 20px;
       font-weight: 500;
       text-decoration: none;
       transition: all 0.3s ease;
     }
-
-    .btn-outline {
+    .hero-root .btn-outline {
       color: #635bff;
       border: 1px solid #635bff;
     }
-
-    .btn-outline:hover {
+    .hero-root .btn-outline:hover {
       background-color: rgba(99, 91, 255, 0.1);
     }
-
-    .btn-primary {
+    .hero-root .btn-primary {
       background-color: #635bff;
       color: white;
       border: 1px solid #635bff;
     }
-
-    .btn-primary:hover {
+    .hero-root .btn-primary:hover {
       background-color: #524dff;
     }
-
-    /* Main content styles */
-    .container {
+    .hero-root .container {
       width: 100%;
       max-width: 1280px;
       height: 600px;
@@ -117,31 +98,27 @@
       display: flex;
       flex-direction: column;
     }
-
-    .hero {
+    .hero-root .hero {
       display: flex;
       align-items: center;
       height: 100%;
       position: relative;
       padding: 0;
     }
-
-    .hero-content {
+    .hero-root .hero-content {
       flex: 1;
       padding: 2rem;
       z-index: 2;
       max-width: 640px;
     }
-
-    .hero-visual {
+    .hero-root .hero-visual {
       flex: 1;
       position: relative;
       height: 100%;
       z-index: 1;
       overflow: visible;
     }
-
-    #particle-canvas {
+    .hero-root #particle-canvas {
       position: absolute;
       top: 0;
       left: 0;
@@ -149,51 +126,41 @@
       height: 100%;
       background-color: transparent;
     }
-
-    h1 {
+    .hero-root h1 {
       font-size: 2.25rem;
       line-height: 1.2;
       margin-bottom: 0.75rem;
       color: #0a2540;
     }
-
-    p.lead {
+    .hero-root p.lead {
       font-size: 1.1rem;
       color: #425466;
       margin-bottom: 1.25rem;
     }
-
-    /* Feature list styles */
-    .features-list {
+    .hero-root .features-list {
       margin-top: 1.25rem;
     }
-
-    .feature-item {
+    .hero-root .feature-item {
       display: flex;
       align-items: flex-start;
       margin-bottom: 0.5rem;
     }
-
-    .feature-item svg {
+    .hero-root .feature-item svg {
       flex-shrink: 0;
       margin-right: 0.5rem;
       margin-top: 0.25rem;
     }
-
-    .feature-item p {
+    .hero-root .feature-item p {
       color: #425466;
     }
-
-    .feature-item a {
+    .hero-root .feature-item a {
       color: #635bff;
       text-decoration: none;
     }
-
-    .feature-item a:hover {
+    .hero-root .feature-item a:hover {
       text-decoration: underline;
     }
-
-    .contact-btn {
+    .hero-root .contact-btn {
       display: inline-flex;
       align-items: center;
       background-color: #635bff;
@@ -205,155 +172,121 @@
       margin-top: 0.75rem;
       transition: background-color 0.3s ease;
     }
-
-    .contact-btn:hover {
+    .hero-root .contact-btn:hover {
       background-color: #524dff;
     }
-
-    .contact-btn svg {
+    .hero-root .contact-btn svg {
       margin-left: 0.5rem;
     }
-
-    /* Enterprise specific styles */
-    .enterprise-tag {
+    .hero-root .enterprise-tag {
       display: inline-block;
       color: #7a73ff;
       font-size: 0.9rem;
       margin-bottom: 0.5rem;
       font-weight: 500;
     }
-  
-    .sub-heading {
+    .hero-root .sub-heading {
       font-size: 1.3rem;
       font-weight: 600;
       margin-top: 1.25rem;
       margin-bottom: 0.5rem;
       color: #0a2540;
     }
-  
-    .desc {
+    .hero-root .desc {
       color: #425466;
       margin-bottom: 1rem;
       font-size: 0.95rem;
     }
-  
-    .stats-container {
+    .hero-root .stats-container {
       display: flex;
       flex-wrap: wrap;
       gap: 1.5rem;
       margin: 1.25rem 0;
     }
-  
-    .stat-item {
+    .hero-root .stat-item {
       margin-bottom: 0.5rem;
     }
-  
-    .stat-label {
+    .hero-root .stat-label {
       font-size: 0.85rem;
       color: #425466;
       margin-bottom: 0.25rem;
     }
-  
-    .stat-value {
+    .hero-root .stat-value {
       font-size: 1.75rem;
       font-weight: 700;
       color: #0a2540;
       display: flex;
       align-items: center;
     }
-  
-    .plus-icon {
+    .hero-root .plus-icon {
       color: #ff5500;
       margin-left: 0.25rem;
     }
-  
-    .companies-info {
+    .hero-root .companies-info {
       color: #425466;
       margin-bottom: 1.25rem;
       font-size: 0.9rem;
     }
-
     /* Responsive styles */
     @media (max-width: 1024px) {
-      .container {
+      .hero-root .container {
         height: 600px;
       }
-      
-      h1 {
+      .hero-root h1 {
         font-size: 2rem;
       }
-      
-      .hero-visual {
+      .hero-root .hero-visual {
         height: 100%;
       }
     }
 
     @media (max-width: 768px) {
-      .container {
+      .hero-root .container {
         height: auto;
       }
-      
-      .hero {
+      .hero-root .hero {
         flex-direction: column;
         height: auto;
         padding: 1rem 0;
       }
-      
-      .hero-content {
+      .hero-root .hero-content {
         padding: 1.5rem;
         max-width: 100%;
       }
-      
-      .hero-visual {
+      .hero-root .hero-visual {
         width: 100%;
         height: 250px;
       }
-      
-      nav {
+      .hero-root nav {
         display: none;
       }
-      
-      .cta-buttons .btn-outline {
+      .hero-root .cta-buttons .btn-outline {
         display: none;
       }
-      
-      .stat-value {
+      .hero-root .stat-value {
         font-size: 1.5rem;
       }
     }
 
     @media (max-width: 480px) {
-      header {
+      .hero-root header {
         padding: 0.5rem;
       }
-      
-      .hero-content {
+      .hero-root .hero-content {
         padding: 1rem;
       }
-      
-      h1 {
+      .hero-root h1 {
         font-size: 1.5rem;
       }
-      
-      .hero-visual {
+      .hero-root .hero-visual {
         height: 200px;
       }
-      
-      .sub-heading {
+      .hero-root .sub-heading {
         font-size: 1.1rem;
       }
-      
-      .stat-value {
+      .hero-root .stat-value {
         font-size: 1.35rem;
       }
-    }
-
-    .hero-root {
-      background-color: #fff;
-      /* ... */
-    }
-    .hero-visual #particle-canvas {
-      /* 기존 스타일 */
     }
   </style>
 </head>
@@ -381,7 +314,7 @@
         
         <p class="companies-info">지금, 150개 이상의 선도 기업들이 함께하고 있습니다.</p>
         
-        <a href="https://hamangic.imweb.me/Companyinformation" class="contact-btn" target="_blank" rel="noopener">
+        <a href="" class="contact-btn" target="_blank" rel="noopener">
           입주업체정보
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 12L10 8L6 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -397,7 +330,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const canvas = document.getElementById('particle-canvas');
+      const canvas = document.querySelector('.hero-root #particle-canvas');
       const ctx = canvas.getContext('2d');
       
       // Set canvas size
