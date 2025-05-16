@@ -23,7 +23,6 @@
       overflow: hidden;
       z-index: 0;
     }
-    /* 여러 겹의 그라데이션 곡선 */
     .bg-blur1, .bg-blur2, .bg-blur3 {
       position: absolute;
       border-radius: 50%;
@@ -64,7 +63,6 @@
       from { transform: translate(0, 0) scale(1) rotate(0deg);}
       to   { transform: translate(-30px, 40px) scale(1.05) rotate(12deg);}
     }
-    /* 라인 텍스처 */
     .bg-lines {
       position: absolute;
       inset: 0;
@@ -87,7 +85,6 @@
       from { background-position: 0 0; }
       to { background-position: 300px 300px; }
     }
-    /* 메인 콘텐츠 */
     .content {
       position: relative;
       z-index: 10;
@@ -135,6 +132,7 @@
     <div class="bg-blur1"></div>
     <div class="bg-blur2"></div>
     <div class="bg-blur3"></div>
+    <div class="bg-lines"></div>
     <canvas class="wave-canvas"></canvas>
   </div>
   <div class="content">
@@ -170,7 +168,6 @@
       { amp: 80, freq: 1.4, speed: 0.8, offset: 0.60, width: 1.7, grad: 2 },
       { amp: 35, freq: 3.2, speed: 1.3, offset: 0.38, width: 1, grad: 0 },
       { amp: 100, freq: 1.1, speed: 0.4, offset: 0.75, width: 2.2, grad: 1 },
-      // 추가된 10개
       { amp: 50, freq: 2.3, speed: 0.65, offset: 0.5, width: 1.3, grad: 2 },
       { amp: 85, freq: 1.5, speed: 0.55, offset: 0.68, width: 1.8, grad: 0 },
       { amp: 45, freq: 2.9, speed: 1.05, offset: 0.33, width: 1.2, grad: 1 },
@@ -184,7 +181,6 @@
     ];
 
     function lerpColor(a, b, t) {
-      // a, b: "ffe478" 등 6자리 hex, t: 0~1
       const ac = a.match(/\w\w/g).map(x => parseInt(x, 16));
       const bc = b.match(/\w\w/g).map(x => parseInt(x, 16));
       return `rgba(${ac.map((v,i)=>Math.round(v+(bc[i]-v)*t)).join(',')}`;
@@ -204,8 +200,7 @@
                   + Math.cos((x / w) * (line.freq/2) * Math.PI * 2 + phase * 0.7) * (line.amp/2)
                   + h * line.offset;
           if (prev) {
-            const alpha = x / w; // 왼쪽 0, 오른쪽 1
-            // 그라데이션 색상 보간
+            const alpha = x / w;
             const colorIdx = Math.floor(alpha * (gradColors.length - 1));
             const colorStart = gradColors[colorIdx].replace('#','');
             const colorEnd = (gradColors[colorIdx + 1] || gradColors[colorIdx]).replace('#','');
