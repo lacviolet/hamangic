@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로고 배너</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .banner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 1280px;
+      height: 120px;
+      box-sizing: border-box;
+      margin: 0 auto;
+    }
+    .column {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      position: relative;
+      padding: 0 20px;
+    }
+    .column:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 25%;
+      height: 50%;
+      border-right: 2px dashed #eee;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo img {
+      max-height: 80px;
+      max-width: 160px;
+      object-fit: contain;
+    }
+    .logo a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner-container">
+    <div class="column">
+      <div class="logo">
+        <a href="https://www.gyeongnam.go.kr/index.gyeong" target="_blank">
+          <img src="gyeongnam.png" alt="경상남도">
+        </a>
+      </div>
+    </div>
+    <div class="column">
+      <div class="logo">
+        <a href="https://www.haman.go.kr/_res/intro/intro.jsp" target="_blank">
+          <img src="haman.png" alt="함안군">
+        </a>
+      </div>
+    </div>
+    <div class="column">
+      <div class="logo">
+        <a href="https://hamancci.korcham.net/front/user/main.do" target="_blank">
+          <img src="hamancci.korcham.png" alt="함안상공회의소">
+        </a>
+      </div>
+    </div>
+    <div class="column">
+      <div class="logo">
+        <a href="https://www.kicox.or.kr/index.do" target="_blank">
+          <img src="kicox.png" alt="한국산업단지공단">
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
