@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Stripe-inspired Landing Page</title>
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
@@ -329,254 +332,358 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const canvas = document.querySelector('.hero-root #particle-canvas');
-      const ctx = canvas.getContext('2d');
+    (function() {
+      // 전역 변수를 private 스코프로 감싸서 메모리 누수 및 중복 실행 방지
+      let isInitialized = false;
+      let resizeListener = null;
+      let mouseMoveListener = null;
+      let mouseLeaveListener = null;
+      let animationFrameIds = [];
+      let canvas, ctx, particleSystem, specialParticles;
       
-      // Set canvas size
-      function resizeCanvas() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-      }
-      
-      resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
-      
-      // Particle system
-      class ParticleSystem {
-        constructor(options) {
-          this.options = Object.assign({
-            particleCount: 160,
-            particleSize: 2,
-            speed: 1,
-            colors: ['#938eff', '#635bff', '#80e9ff', '#0048e5'],
-            connectionDistance: 180,
-            connectionWidth: 0.5,
-            waveAmplitude: 50,
-            waveFrequency: 0.02,
-            mouseInteraction: true
-          }, options);
-          
-          this.particles = [];
-          this.mouse = {
-            x: null,
-            y: null,
-            radius: 100
-          };
-          
-          this.init();
-          
-          // Mouse interaction
-          if (this.options.mouseInteraction) {
-            canvas.addEventListener('mousemove', (e) => {
-              const rect = canvas.getBoundingClientRect();
-              this.mouse.x = e.clientX - rect.left;
-              this.mouse.y = e.clientY - rect.top;
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-              this.mouse.x = null;
-              this.mouse.y = null;
-            });
-          }
+      function initialize() {
+        // 이미 초기화되었다면 중복 실행 방지
+        if (isInitialized) {
+          return;
         }
         
-        init() {
-          // Create particles
-          for (let i = 0; i < this.options.particleCount; i++) {
-            this.particles.push({
-              x: Math.random() * canvas.width,
-              y: Math.random() * canvas.height,
-              size: Math.random() * this.options.particleSize + 1,
-              speedX: (Math.random() - 0.5) * this.options.speed,
-              speedY: (Math.random() - 0.5) * this.options.speed,
-              color: this.options.colors[Math.floor(Math.random() * this.options.colors.length)],
-              baseY: Math.random() * canvas.height,
-              waveOffset: Math.random() * Math.PI * 2
-            });
-          }
+        isInitialized = true;
+        canvas = document.querySelector('.hero-root #particle-canvas');
+        if (!canvas) {
+          console.error('Canvas element not found');
+          return;
         }
         
-        update() {
-          for (let i = 0; i < this.particles.length; i++) {
-            const p = this.particles[i];
+        ctx = canvas.getContext('2d');
+        if (!ctx) {
+          console.error('Could not get 2D context');
+          return;
+        }
+        
+        // Set canvas size
+        function resizeCanvas() {
+          canvas.width = canvas.clientWidth;
+          canvas.height = canvas.clientHeight;
+        }
+        
+        resizeCanvas();
+        
+        // 기존 이벤트 리스너 제거 후 새로 등록
+        if (resizeListener) {
+          window.removeEventListener('resize', resizeListener);
+        }
+        
+        resizeListener = resizeCanvas;
+        window.addEventListener('resize', resizeListener);
+        
+        // Particle system
+        class ParticleSystem {
+          constructor(options) {
+            this.options = Object.assign({
+              particleCount: 160,
+              particleSize: 2,
+              speed: 1,
+              colors: ['#938eff', '#635bff', '#80e9ff', '#0048e5'],
+              connectionDistance: 180,
+              connectionWidth: 0.5,
+              waveAmplitude: 50,
+              waveFrequency: 0.02,
+              mouseInteraction: true
+            }, options);
             
-            // Wave motion
-            p.y = p.baseY + Math.sin(p.x * this.options.waveFrequency + p.waveOffset + Date.now() * 0.001) * this.options.waveAmplitude;
+            this.particles = [];
+            this.mouse = {
+              x: null,
+              y: null,
+              radius: 100
+            };
             
-            // Move particles
-            p.x += p.speedX;
+            this.init();
             
             // Mouse interaction
-            if (this.mouse.x !== null && this.mouse.y !== null) {
-              const dx = this.mouse.x - p.x;
-              const dy = this.mouse.y - p.y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
+            if (this.options.mouseInteraction) {
+              // 기존 이벤트 리스너 제거
+              if (mouseMoveListener) {
+                canvas.removeEventListener('mousemove', mouseMoveListener);
+              }
+              if (mouseLeaveListener) {
+                canvas.removeEventListener('mouseleave', mouseLeaveListener);
+              }
               
-              if (distance < this.mouse.radius) {
-                const force = (this.mouse.radius - distance) / this.mouse.radius;
-                p.x -= dx * force * 0.03;
-                p.y -= dy * force * 0.03;
+              // 새 이벤트 리스너 등록
+              mouseMoveListener = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                this.mouse.x = e.clientX - rect.left;
+                this.mouse.y = e.clientY - rect.top;
+              };
+              
+              mouseLeaveListener = () => {
+                this.mouse.x = null;
+                this.mouse.y = null;
+              };
+              
+              canvas.addEventListener('mousemove', mouseMoveListener);
+              canvas.addEventListener('mouseleave', mouseLeaveListener);
+            }
+          }
+          
+          init() {
+            // Clear previous particles
+            this.particles = [];
+            
+            // Create particles
+            for (let i = 0; i < this.options.particleCount; i++) {
+              this.particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * this.options.particleSize + 1,
+                speedX: (Math.random() - 0.5) * this.options.speed,
+                speedY: (Math.random() - 0.5) * this.options.speed,
+                color: this.options.colors[Math.floor(Math.random() * this.options.colors.length)],
+                baseY: Math.random() * canvas.height,
+                waveOffset: Math.random() * Math.PI * 2
+              });
+            }
+          }
+          
+          update() {
+            for (let i = 0; i < this.particles.length; i++) {
+              const p = this.particles[i];
+              
+              // Wave motion
+              p.y = p.baseY + Math.sin(p.x * this.options.waveFrequency + p.waveOffset + Date.now() * 0.001) * this.options.waveAmplitude;
+              
+              // Move particles
+              p.x += p.speedX;
+              
+              // Mouse interaction
+              if (this.mouse.x !== null && this.mouse.y !== null) {
+                const dx = this.mouse.x - p.x;
+                const dy = this.mouse.y - p.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.mouse.radius) {
+                  const force = (this.mouse.radius - distance) / this.mouse.radius;
+                  p.x -= dx * force * 0.03;
+                  p.y -= dy * force * 0.03;
+                }
+              }
+              
+              // Boundary check
+              if (p.x < 0) p.x = canvas.width;
+              if (p.x > canvas.width) p.x = 0;
+              if (p.y < 0) p.y = canvas.height;
+              if (p.y > canvas.height) p.y = 0;
+            }
+          }
+          
+          draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            ctx.lineWidth = this.options.connectionWidth;
+            
+            for (let i = 0; i < this.particles.length; i++) {
+              const p1 = this.particles[i];
+              
+              for (let j = i + 1; j < this.particles.length; j++) {
+                const p2 = this.particles[j];
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.options.connectionDistance) {
+                  ctx.beginPath();
+                  ctx.strokeStyle = p1.color;
+                  ctx.globalAlpha = 1 - (distance / this.options.connectionDistance);
+                  ctx.moveTo(p1.x, p1.y);
+                  ctx.lineTo(p2.x, p2.y);
+                  ctx.stroke();
+                  ctx.globalAlpha = 1;
+                }
               }
             }
             
-            // Boundary check
-            if (p.x < 0) p.x = canvas.width;
-            if (p.x > canvas.width) p.x = 0;
-            if (p.y < 0) p.y = canvas.height;
-            if (p.y > canvas.height) p.y = 0;
+            // Draw particles
+            for (let i = 0; i < this.particles.length; i++) {
+              const p = this.particles[i];
+              
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fillStyle = p.color;
+              ctx.fill();
+            }
+          }
+          
+          animate() {
+            this.update();
+            this.draw();
+            const animationId = requestAnimationFrame(this.animate.bind(this));
+            animationFrameIds.push(animationId);
           }
         }
         
-        draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          // Draw connections
-          ctx.lineWidth = this.options.connectionWidth;
-          
-          for (let i = 0; i < this.particles.length; i++) {
-            const p1 = this.particles[i];
+        // Create and start the particle system
+        particleSystem = new ParticleSystem({
+          particleCount: 160,
+          particleSize: 2,
+          speed: 0.3,
+          colors: ['#938eff', '#635bff', '#80e9ff'],
+          connectionDistance: 140,
+          connectionWidth: 0.7,
+          waveAmplitude: 40,
+          waveFrequency: 0.02,
+          mouseInteraction: true
+        });
+        
+        particleSystem.animate();
+        
+        // Add some special particles that move in a more directed pattern
+        specialParticles = [];
+        const specialParticleCount = 14;
+        
+        for (let i = 0; i < specialParticleCount; i++) {
+          specialParticles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: 3,
+            speedX: (Math.random() - 0.5) * 2,
+            speedY: (Math.random() - 0.5) * 2,
+            color: '#ff5500', // Orange accent color
+            trail: []
+          });
+        }
+        
+        function animateSpecialParticles() {
+          // Update special particles
+          for (let i = 0; i < specialParticles.length; i++) {
+            const p = specialParticles[i];
             
-            for (let j = i + 1; j < this.particles.length; j++) {
-              const p2 = this.particles[j];
-              const dx = p1.x - p2.x;
-              const dy = p1.y - p2.y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              
-              if (distance < this.options.connectionDistance) {
-                ctx.beginPath();
-                ctx.strokeStyle = p1.color;
-                ctx.globalAlpha = 1 - (distance / this.options.connectionDistance);
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.stroke();
-                ctx.globalAlpha = 1;
-              }
+            // Add current position to trail
+            p.trail.push({ x: p.x, y: p.y });
+            
+            // Limit trail length
+            if (p.trail.length > 28) {
+              p.trail.shift();
             }
-          }
-          
-          // Draw particles
-          for (let i = 0; i < this.particles.length; i++) {
-            const p = this.particles[i];
             
+            // Move particle
+            p.x += p.speedX;
+            p.y += p.speedY;
+            
+            // Boundary check with bounce
+            if (p.x < 0 || p.x > canvas.width) {
+              p.speedX *= -1;
+            }
+            if (p.y < 0 || p.y > canvas.height) {
+              p.speedY *= -1;
+            }
+            
+            // Draw trail
+            ctx.beginPath();
+            ctx.moveTo(p.trail[0].x, p.trail[0].y);
+            
+            for (let j = 1; j < p.trail.length; j++) {
+              ctx.lineTo(p.trail[j].x, p.trail[j].y);
+            }
+            
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.5;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            
+            // Draw particle
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
             ctx.fill();
           }
+          
+          const animationId = requestAnimationFrame(animateSpecialParticles);
+          animationFrameIds.push(animationId);
         }
         
-        animate() {
-          this.update();
-          this.draw();
-          requestAnimationFrame(this.animate.bind(this));
+        animateSpecialParticles();
+        
+        // Add gradient background effect
+        function drawGradientBackground() {
+          const gradient = ctx.createRadialGradient(
+            canvas.width * 0.7, canvas.height * 0.3, 0,
+            canvas.width * 0.7, canvas.height * 0.3, canvas.width * 0.8
+          );
+          
+          gradient.addColorStop(0, 'rgba(242, 241, 255, 0.8)');
+          gradient.addColorStop(1, 'rgba(242, 241, 255, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
+        
+        // Override the particle system's draw method to include the gradient
+        const originalDraw = particleSystem.draw.bind(particleSystem);
+        particleSystem.draw = function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawGradientBackground();
+          originalDraw();
+        };
       }
+
+      // 애니메이션, 이벤트 리스너 등 모든 리소스 정리
+      function cleanup() {
+        // 모든 애니메이션 프레임 취소
+        animationFrameIds.forEach(id => {
+          cancelAnimationFrame(id);
+        });
+        animationFrameIds = [];
+        
+        // 이벤트 리스너 제거
+        if (resizeListener) {
+          window.removeEventListener('resize', resizeListener);
+        }
+        
+        if (canvas) {
+          if (mouseMoveListener) {
+            canvas.removeEventListener('mousemove', mouseMoveListener);
+          }
+          if (mouseLeaveListener) {
+            canvas.removeEventListener('mouseleave', mouseLeaveListener);
+          }
+        }
+        
+        // 상태 초기화
+        isInitialized = false;
+        particleSystem = null;
+        specialParticles = null;
+      }
+
+      // 페이지 로드 시 초기화
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+      } else {
+        initialize();
+      }
+
+      // 페이지 이탈 시 정리
+      window.addEventListener('beforeunload', cleanup);
       
-      // Create and start the particle system
-      const particleSystem = new ParticleSystem({
-        particleCount: 160,
-        particleSize: 2,
-        speed: 0.3,
-        colors: ['#938eff', '#635bff', '#80e9ff'],
-        connectionDistance: 140,
-        connectionWidth: 0.7,
-        waveAmplitude: 40,
-        waveFrequency: 0.02,
-        mouseInteraction: true
+      // 가시성 변경 시 처리 (탭 전환 등)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          cleanup();
+        } else if (document.visibilityState === 'visible') {
+          initialize();
+        }
       });
       
-      particleSystem.animate();
-      
-      // Add some special particles that move in a more directed pattern
-      const specialParticles = [];
-      const specialParticleCount = 14;
-      
-      for (let i = 0; i < specialParticleCount; i++) {
-        specialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: 3,
-          speedX: (Math.random() - 0.5) * 2,
-          speedY: (Math.random() - 0.5) * 2,
-          color: '#ff5500', // Orange accent color
-          trail: []
-        });
-      }
-      
-      function animateSpecialParticles() {
-        // Update special particles
-        for (let i = 0; i < specialParticles.length; i++) {
-          const p = specialParticles[i];
-          
-          // Add current position to trail
-          p.trail.push({ x: p.x, y: p.y });
-          
-          // Limit trail length
-          if (p.trail.length > 28) {
-            p.trail.shift();
-          }
-          
-          // Move particle
-          p.x += p.speedX;
-          p.y += p.speedY;
-          
-          // Boundary check with bounce
-          if (p.x < 0 || p.x > canvas.width) {
-            p.speedX *= -1;
-          }
-          if (p.y < 0 || p.y > canvas.height) {
-            p.speedY *= -1;
-          }
-          
-          // Draw trail
-          ctx.beginPath();
-          ctx.moveTo(p.trail[0].x, p.trail[0].y);
-          
-          for (let j = 1; j < p.trail.length; j++) {
-            ctx.lineTo(p.trail[j].x, p.trail[j].y);
-          }
-          
-          ctx.strokeStyle = p.color;
-          ctx.lineWidth = 2;
-          ctx.globalAlpha = 0.5;
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-          
-          // Draw particle
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.fill();
+      // 5초마다 캔버스 상태 확인 및 필요시 재초기화
+      setInterval(() => {
+        if (!canvas || !ctx || canvas.width === 0 || canvas.height === 0) {
+          cleanup();
+          initialize();
         }
-        
-        requestAnimationFrame(animateSpecialParticles);
-      }
-      
-      animateSpecialParticles();
-      
-      // Add gradient background effect
-      function drawGradientBackground() {
-        const gradient = ctx.createRadialGradient(
-          canvas.width * 0.7, canvas.height * 0.3, 0,
-          canvas.width * 0.7, canvas.height * 0.3, canvas.width * 0.8
-        );
-        
-        gradient.addColorStop(0, 'rgba(242, 241, 255, 0.8)');
-        gradient.addColorStop(1, 'rgba(242, 241, 255, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-      
-      // Override the particle system's draw method to include the gradient
-      const originalDraw = particleSystem.draw.bind(particleSystem);
-      particleSystem.draw = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawGradientBackground();
-        originalDraw();
-      };
-    });
+      }, 5000);
+    })();
   </script>
 </body>
 </html>
