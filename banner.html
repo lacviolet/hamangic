@@ -2,21 +2,25 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>로고 배너</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
     }
     .banner-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
+      max-width: 1280px;
       height: 120px;
       box-sizing: border-box;
       margin: 0 auto;
+      flex-wrap: wrap;
     }
     .column {
       flex: 1;
@@ -26,6 +30,7 @@
       height: 100%;
       position: relative;
       padding: 0 20px;
+      min-width: 200px;
     }
     .column:not(:last-child)::after {
       content: '';
@@ -43,12 +48,38 @@
     .logo img {
       max-height: 80px;
       max-width: 160px;
+      width: auto;
+      height: auto;
       object-fit: contain;
+      transition: transform 0.2s ease;
     }
     .logo a {
       display: flex;
       align-items: center;
       justify-content: center;
+      text-decoration: none;
+    }
+    .logo a:hover img {
+      transform: scale(1.05);
+    }
+    
+    /* 반응형 디자인을 위한 미디어 쿼리 */
+    @media (max-width: 768px) {
+      .banner-container {
+        height: auto;
+        flex-direction: column;
+        padding: 20px 0;
+      }
+      .column {
+        width: 100%;
+        padding: 10px 0;
+      }
+      .column:not(:last-child)::after {
+        display: none;
+      }
+      .column:not(:last-child) {
+        border-bottom: 1px dashed #eee;
+      }
     }
   </style>
 </head>
@@ -56,29 +87,29 @@
   <div class="banner-container">
     <div class="column">
       <div class="logo">
-        <a href="https://www.gyeongnam.go.kr/index.gyeong" target="_blank">
-          <img src="gyeongnam.png" alt="경상남도">
+        <a href="https://www.gyeongnam.go.kr/index.gyeong" target="_blank" rel="noopener">
+          <img src="gyeongnam.png" alt="경상남도" width="160" height="80" loading="lazy">
         </a>
       </div>
     </div>
     <div class="column">
       <div class="logo">
-        <a href="https://www.haman.go.kr/_res/intro/intro.jsp" target="_blank">
-          <img src="haman.png" alt="함안군">
+        <a href="https://www.haman.go.kr/_res/intro/intro.jsp" target="_blank" rel="noopener">
+          <img src="haman.png" alt="함안군" width="160" height="80" loading="lazy">
         </a>
       </div>
     </div>
     <div class="column">
       <div class="logo">
-        <a href="https://hamancci.korcham.net/front/user/main.do" target="_blank">
-          <img src="hamancci.korcham.png" alt="함안상공회의소">
+        <a href="https://hamancci.korcham.net/front/user/main.do" target="_blank" rel="noopener">
+          <img src="hamancci.korcham.png" alt="함안상공회의소" width="160" height="80" loading="lazy">
         </a>
       </div>
     </div>
     <div class="column">
       <div class="logo">
-        <a href="https://www.kicox.or.kr/index.do" target="_blank">
-          <img src="kicox.png" alt="한국산업단지공단">
+        <a href="https://www.kicox.or.kr/index.do" target="_blank" rel="noopener">
+          <img src="kicox.png" alt="한국산업단지공단" width="160" height="80" loading="lazy">
         </a>
       </div>
     </div>
