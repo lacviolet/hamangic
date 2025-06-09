@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>드롭다운 메뉴 시스템</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .haman_navigation-container {
+            background-color: #fff;
+            /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
+            position: relative;
+        }
+
+        .haman_nav-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 20px;
+            background: #fff;
+            height: 80px;
+        }
+
+        .haman_home-icon {
+            width: 40px;
+            height: 40px;
+            background: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .haman_home-icon::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 28px;
+            background-color: #e0e0e0;
+        }
+
+        .haman_home-icon:hover {
+            background-color: #333;
+        }
+
+        .haman_home-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: #222;
+        }
+
+        .haman_nav-menu {
+            display: flex;
+            list-style: none;
+            position: relative;
+            gap: 0;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100%;
+            margin-left: 0;
+        }
+
+        .haman_nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 32px 0 0;
+        }
+
+        .haman_nav-item:not(:first-child)::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 28px;
+            background: #e0e0e0;
+            margin-right: 24px;
+        }
+
+        .haman_nav-item:last-child {
+            padding-right: 0;
+        }
+
+        .haman_nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0;
+            text-decoration: none;
+            color: #333;
+            font-size: 20px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-bottom-color 0.2s;
+            cursor: pointer;
+            min-height: 56px;
+            height: 100%;
+            text-align: left;
+        }
+
+        .haman_nav-link:hover,
+        .haman_nav-link.active {
+            color: #007bff;
+            /* border-bottom-color: #007bff; */
+        }
+
+        .haman_nav-link .haman_arrow {
+            margin-left: 10px;
+            font-size: 22px;
+            color: #333;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .haman_nav-link.active .haman_arrow {
+            transform: rotate(180deg);
+        }
+
+        .haman_dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            width: 180px;
+            /* box-shadow: 0 5px 20px rgba(0,0,0,0.15); */
+            border-radius: 0 0 8px 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            /* transition: all 0.3s ease; */
+            z-index: 1000;
+            border-top: 3px solid #007bff;
+        }
+
+        .haman_nav-item:hover .haman_dropdown-menu,
+        .haman_nav-item.active .haman_dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+        }
+
+        .haman_dropdown-item {
+            display: block;
+            padding: 15px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .haman_dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+            padding-left: 25px;
+        }
+
+        .haman_dropdown-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 히스토리 depth1 관련 스타일 */
+        .haman_hist_depth1 {
+            position: relative;
+        }
+
+        .haman_hist_depth1 .haman_dropdown-menu {
+            /* animation: slideDown 0.3s ease-out; */
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .haman_nav-wrapper {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .haman_nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .haman_nav-link {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+            
+            .haman_dropdown-menu {
+                position: static;
+                /* box-shadow: inset 0 3px 6px rgba(0,0,0,0.1); */
+                transform: none;
+                border-radius: 8px;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="haman_navigation-container">
+        <div class="haman_nav-wrapper">
+            <div class="haman_home-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </div>
+            
+            <ul class="haman_nav-menu">
+                <li class="haman_nav-item haman_hist_depth1" data-menu="community">
+                    <a class="haman_nav-link">
+                        관리공단소개
+                        <i class="fas fa-solid fa-chevron-down haman_arrow"></i>
+                    </a>
+                    <div class="haman_dropdown-menu">
+                        <a href="#" class="haman_dropdown-item">관리공단소개</a>
+                        <a href="#" class="haman_dropdown-item">사업현황</a>
+                        <a href="#" class="haman_dropdown-item">입주절차안내</a>
+                        <a href="#" class="haman_dropdown-item">입주업체현황</a>
+                        <a href="#" class="haman_dropdown-item">커뮤니티</a>
+                    </div>
+                </li>
+                
+                <li class="haman_nav-item haman_hist_depth1" data-menu="notice">
+                    <a class="haman_nav-link">
+                        인사말
+                        <i class="fas fa-solid fa-chevron-down haman_arrow"></i>
+                    </a>
+                    <div class="haman_dropdown-menu">
+                        <a href="#" class="haman_dropdown-item">인사말</a>
+                        <a href="#" class="haman_dropdown-item">설립목적 맟 연혁</a>
+                        <a href="#" class="haman_dropdown-item">기구 및 업무</a>
+                        <a href="#" class="haman_dropdown-item">찾아오시는 길</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <script>
+        // hist_depth1 관련 JavaScript 기능
+        class HistDepth1Manager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.setupAccessibility();
+            }
+
+            bindEvents() {
+                const histDepth1Items = document.querySelectorAll('.haman_hist_depth1');
+                
+                histDepth1Items.forEach(item => {
+                    const navLink = item.querySelector('.haman_nav-link');
+                    const dropdownMenu = item.querySelector('.haman_dropdown-menu');
+                    
+                    // 마우스 이벤트
+                    item.addEventListener('mouseenter', (e) => {
+                        this.showDropdown(item);
+                    });
+                    
+                    item.addEventListener('mouseleave', (e) => {
+                        this.hideDropdown(item);
+                    });
+                    
+                    // 클릭 이벤트 (모바일 대응)
+                    navLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.toggleDropdown(item);
+                    });
+                    
+                    // 키보드 접근성
+                    navLink.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.toggleDropdown(item);
+                        }
+                    });
+                });
+
+                // 외부 클릭 시 드롭다운 닫기
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.haman_hist_depth1')) {
+                        this.hideAllDropdowns();
+                    }
+                });
+            }
+
+            showDropdown(item) {
+                // 다른 드롭다운 숨기기
+                this.hideAllDropdowns();
+                
+                const navLink = item.querySelector('.haman_nav-link');
+                const dropdownMenu = item.querySelector('.haman_dropdown-menu');
+                
+                item.classList.add('active');
+                navLink.classList.add('active');
+                
+                // 애니메이션을 위한 약간의 지연
+                setTimeout(() => {
+                    dropdownMenu.style.display = 'block';
+                }, 10);
+                
+                // 사용자 이벤트 로깅 (분석용)
+                this.logMenuInteraction(item.dataset.menu, 'show');
+            }
+
+            hideDropdown(item) {
+                const navLink = item.querySelector('.haman_nav-link');
+                const dropdownMenu = item.querySelector('.haman_dropdown-menu');
+                
+                item.classList.remove('active');
+                navLink.classList.remove('active');
+                
+                setTimeout(() => {
+                    if (!item.classList.contains('active')) {
+                        dropdownMenu.style.display = 'none';
+                    }
+                }, 300);
+            }
+
+            toggleDropdown(item) {
+                if (item.classList.contains('active')) {
+                    this.hideDropdown(item);
+                } else {
+                    this.showDropdown(item);
+                }
+            }
+
+            hideAllDropdowns() {
+                const activeItems = document.querySelectorAll('.haman_hist_depth1.active');
+                activeItems.forEach(item => {
+                    this.hideDropdown(item);
+                });
+            }
+
+            setupAccessibility() {
+                const navLinks = document.querySelectorAll('.haman_hist_depth1 .haman_nav-link');
+                navLinks.forEach(link => {
+                    link.setAttribute('role', 'button');
+                    link.setAttribute('aria-haspopup', 'true');
+                    link.setAttribute('aria-expanded', 'false');
+                    link.setAttribute('tabindex', '0');
+                });
+
+                const dropdownMenus = document.querySelectorAll('.haman_hist_depth1 .haman_dropdown-menu');
+                dropdownMenus.forEach(menu => {
+                    menu.setAttribute('role', 'menu');
+                });
+
+                const dropdownItems = document.querySelectorAll('.haman_hist_depth1 .haman_dropdown-item');
+                dropdownItems.forEach(item => {
+                    item.setAttribute('role', 'menuitem');
+                });
+            }
+
+            // 분석을 위한 메뉴 상호작용 로깅
+            logMenuInteraction(menuType, action) {
+                console.log(`Menu Interaction: ${menuType} - ${action}`);
+                
+                // 실제 환경에서는 여기에 GA4나 기타 분석 도구 연동
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'menu_interaction', {
+                        'menu_type': menuType,
+                        'action': action,
+                        'timestamp': new Date().toISOString()
+                    });
+                }
+            }
+        }
+
+        // 부드러운 스크롤 효과
+        class SmoothScrollManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                const dropdownItems = document.querySelectorAll('.haman_dropdown-item');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const href = item.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                            e.preventDefault();
+                            this.smoothScrollTo(href);
+                        }
+                    });
+                });
+            }
+
+            smoothScrollTo(target) {
+                const element = document.querySelector(target);
+                if (element) {
+                    element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            new HistDepth1Manager();
+            new SmoothScrollManager();
+            
+            console.log('haman_hist_depth1 드롭다운 메뉴 시스템이 초기화되었습니다.');
+        });
+
+        // 성능 최적화를 위한 디바운스 함수
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 브라우저 호환성 체크
+        function checkBrowserCompatibility() {
+            const isModernBrowser = 'querySelector' in document && 
+                                  'addEventListener' in window && 
+                                  'classList' in document.createElement('div');
+            
+            if (!isModernBrowser) {
+                console.warn('일부 기능이 구형 브라우저에서 제한될 수 있습니다.');
+            }
+            
+            return isModernBrowser;
+        }
+
+        // 초기 호환성 체크
+        checkBrowserCompatibility();
+    </script>
+</body>
+</html>
