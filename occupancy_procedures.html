@@ -473,11 +473,13 @@
       let isDown = false;
       let startX;
       let scrollLeft;
+      let isDragging = false;
 
       cardsContainer.addEventListener('mousedown', (e) => {
         isDown = true;
         startX = e.pageX - cardsContainer.offsetLeft;
         scrollLeft = cardsContainer.scrollLeft;
+        isDragging = false;
       });
 
       cardsContainer.addEventListener('mouseleave', () => {
@@ -490,10 +492,22 @@
 
       cardsContainer.addEventListener('mousemove', (e) => {
         if (!isDown) return;
-        e.preventDefault();
         const x = e.pageX - cardsContainer.offsetLeft;
-        const walk = (x - startX) * 2; // 스크롤 속도 조정
-        cardsContainer.scrollLeft = scrollLeft - walk;
+        const walk = (x - startX) * 2;
+        if (Math.abs(x - startX) > 5) { // 5px 이상 움직였을 때만 드래그로 간주
+          isDragging = true;
+          e.preventDefault();
+          cardsContainer.scrollLeft = scrollLeft - walk;
+        }
+      });
+
+      // 링크 클릭 시 드래그였다면 링크 이동 막기
+      cardsContainer.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          if (isDragging) {
+            e.preventDefault();
+          }
+        });
       });
     });
   </script>
