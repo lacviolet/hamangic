@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,382 +7,53 @@
     <title>연혁 타임라인</title>
     <link href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        haman_body {
-            font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
-            background: #fff;
-            line-height: 1.6;
-        }
-        
-        .haman_container {
-            width: 95%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 50px 0;
-        }
-        
-        .haman_main_title {
-            position: relative;
-            padding-left: 23px;
-            line-height: 140%;
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 50px;
-        }
-        
-        .haman_main_title::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 15px;
-            height: 15px;
-            border: 5px solid #00a1de;
-            border-radius: 50%;
-        }
-        
-        .haman_history {
-            width: 95%;
-            max-width: 1400px;
-            margin: 0 auto 80px auto;
-        }
-        
-        .haman_history_list {
-            position: relative;
-            width: 100%;
-            margin-top: 10px;
-            padding-top: 10px;
-        }
-        
-        .haman_history_list::before {
-            content: "";
-            position: absolute;
-            left: 51%;
-            top: 0;
-            width: 35px;
-            height: 35px;
-            background: rgba(38,118,68,0.2);
-            transform: translateX(-50%);
-            border-radius: 50%;
-        }
-        
-        .haman_history_list::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 15px;
-            width: 30px;
-            height: 30px;
-            background: #00a1de;
-            transform: translateX(-50%);
-            border-radius: 50%;
-        }
-        
-        .haman_his_ul1 {
-            position: relative;
-            overflow: hidden;
-            list-style: none;
-        }
-        
-        .haman_his_ul1::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 1px;
-            height: 100%;
-            background: #ccc;
-            transform: translateX(-50%);
-        }
-        
-        .haman_his_ul1 > li {
-            clear: both;
-            width: 50.5%;
-            padding-top: 30px;
-            text-align: right;
-        }
-        
-        .haman_his_ul1 > li > dl dt {
-            position: relative;
-            padding-right: 30px;
-            margin-bottom: 10px;
-            line-height: 100%;
-            font-size: 35px;
-            color: #00a1de;
-            font-weight: 600;
-        }
-        
-        .haman_his_ul1 > li > dl dt::before {
-            content: "";
-            position: absolute;
-            right: 0;
-            top: 50%;
-            width: 5px;
-            height: 5px;
-            border: 4px solid #555;
-            border-radius: 100%;
-            background: #fff;
-            transform: translateY(-50%);
-        }
-        
-        .haman_his_ul1 > li > dl dd {
-            padding-right: 30px;
-        }
-        
-        .haman_his_ul1 > li > dl dd ul {
-            list-style: none;
-        }
-        
-        .haman_his_ul1 > li > dl dd ul li {
-            position: relative;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            flex-direction: row-reverse;
-            padding-right: 15px;
-            line-height: 160%;
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .haman_his_ul1 > li > dl dd ul li::before {
-            content: "";
-            position: absolute;
-            right: 0;
-            top: 15px;
-            width: 5px;
-            height: 5px;
-            border-radius: 100%;
-            background: #00a1de;
-        }
-        
-        .haman_his_ul1 > li > dl dd ul li strong {
-            width: 10%;
-            min-width: 80px;
-            font-weight: 600;
-        }
-        
-        .haman_his_ul1 > li > dl dd ul li span {
-            width: 80%;
-            word-break: keep-all;
-        }
-        
-        /* 홀수 번째 아이템들 (왼쪽 정렬) */
-        .haman_his_ul1 > li:nth-child(odd) {
-            float: right;
-            padding-top: 30px;
-            text-align: left;
-        }
-        
-        .haman_his_ul1 > li:nth-child(odd) > dl dt {
-            position: relative;
-            padding-left: 30px;
-            padding-right: 0;
-            margin-bottom: 10px;
-            line-height: 100%;
-            font-size: 35px;
-            color: #00a1de;
-            font-weight: 600;
-        }
-        
-        .haman_his_ul1 > li:nth-child(odd) > dl dt::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 5px;
-            height: 5px;
-            border: 4px solid #555;
-            border-radius: 100%;
-            background: #fff;
-            transform: translateY(-50%);
-        }
-        
-        .haman_his_ul1 > li:nth-child(odd) > dl dd {
-            padding-left: 30px;
-            padding-right: 0;
-        }
-        
-        .haman_his_ul1 > li:nth-child(odd) > dl dd ul li {
-            position: relative;
-            padding-left: 15px;
-            padding-right: 0;
-            line-height: 160%;
-            font-size: 20px;
-            color: #333;
-            flex-direction: row;
-        }
-        
-        .haman_his_ul1 > li:nth-child(odd) > dl dd ul li::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 15px;
-            width: 5px;
-            height: 5px;
-            border-radius: 100%;
-            background: #00a1de;
-        }
-        
-        /* 반응형 디자인 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif; background: #fff; line-height: 1.6; }
+        .haman_container { width: 95%; max-width: 1400px; margin: 0 auto; padding: 50px 0; }
+        .haman_main_title { position: relative; padding-left: 23px; font-size: 28px; font-weight: 600; color: #333; margin-bottom: 50px; }
+        .haman_main_title::before { content: ""; position: absolute; left: 0; top: 0; width: 15px; height: 15px; border: 5px solid #00a1de; border-radius: 50%; }
+        .haman_history { width: 95%; max-width: 1400px; margin: 0 auto 80px auto; }
+        .haman_history_list { position: relative; width: 100%; margin-top: 10px; padding-top: 10px; }
+        .haman_history_list::before { content: ""; position: absolute; left: 51%; top: 0; width: 35px; height: 35px; background: rgba(38,118,68,0.2); transform: translateX(-50%); border-radius: 50%; }
+        .haman_history_list::after { content: ""; position: absolute; left: 50%; top: 15px; width: 30px; height: 30px; background: #00a1de; transform: translateX(-50%); border-radius: 50%; }
+        .haman_his_ul1 { position: relative; overflow: hidden; list-style: none; }
+        .haman_his_ul1::before { content: ""; position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: #ccc; transform: translateX(-50%); }
+        .haman_his_ul1 > li { clear: both; width: 50.5%; padding-top: 30px; text-align: right; }
+        .haman_his_ul1 > li > dl dt { position: relative; padding-right: 30px; margin-bottom: 10px; font-size: 35px; color: #00a1de; font-weight: 600; }
+        .haman_his_ul1 > li > dl dt::before { content: ""; position: absolute; right: 0; top: 50%; width: 5px; height: 5px; border: 4px solid #555; border-radius: 100%; background: #fff; transform: translateY(-50%); }
+        .haman_his_ul1 > li > dl dd { padding-right: 30px; }
+        .haman_his_ul1 > li > dl dd ul { list-style: none; }
+        .haman_his_ul1 > li > dl dd ul li { position: relative; display: flex; flex-wrap: wrap; justify-content: flex-start; flex-direction: row-reverse; padding-right: 15px; font-size: 20px; color: #333; margin-bottom: 10px; }
+        .haman_his_ul1 > li > dl dd ul li::before { content: ""; position: absolute; right: 0; top: 15px; width: 5px; height: 5px; border-radius: 100%; background: #00a1de; }
+        .haman_his_ul1 > li > dl dd ul li strong { width: 10%; min-width: 80px; font-weight: 600; }
+        .haman_his_ul1 > li > dl dd ul li span { width: 80%; word-break: keep-all; }
+        .haman_his_ul1 > li:nth-child(odd) { float: right; padding-top: 30px; text-align: left; }
+        .haman_his_ul1 > li:nth-child(odd) > dl dt { padding-left: 30px; padding-right: 0; }
+        .haman_his_ul1 > li:nth-child(odd) > dl dt::before { left: 0; right: auto; }
+        .haman_his_ul1 > li:nth-child(odd) > dl dd { padding-left: 30px; padding-right: 0; }
+        .haman_his_ul1 > li:nth-child(odd) > dl dd ul li { padding-left: 15px; padding-right: 0; flex-direction: row; }
+        .haman_his_ul1 > li:nth-child(odd) > dl dd ul li::before { left: 0; right: auto; }
         @media (max-width: 640px) {
-            .haman_main_title {
-                padding-left: 18px;
-                font-size: 20px;
-            }
-            
-            .haman_main_title::before {
-                width: 12px;
-                height: 12px;
-                border: 4px solid #00a1de;
-            }
-            
-            .haman_history_list {
-                position: relative;
-                width: 100%;
-                margin-top: 20px;
-                padding-top: 20px;
-            }
-            
-            .haman_history_list::before {
-                content: "";
-                position: absolute;
-                left: 10px;
-                top: 0;
-                width: 35px;
-                height: 35px;
-                background: rgba(38,118,68,0.2);
-                transform: none;
-                border-radius: 50%;
-            }
-            
-            .haman_history_list::after {
-                content: "";
-                position: absolute;
-                left: 0;
-                top: 15px;
-                width: 30px;
-                height: 30px;
-                background: #00a1de;
-                transform: none;
-                border-radius: 50%;
-            }
-            
-            .haman_his_ul1::before {
-                left: 15px;
-                transform: none;
-            }
-            
-            .haman_his_ul1 > li {
-                clear: both;
-                width: 100%;
-                padding-top: 30px;
-                margin-left: 8px;
-                text-align: left;
-            }
-            
-            .haman_his_ul1 > li > dl dt {
-                position: relative;
-                padding-left: 30px;
-                padding-right: 0;
-                margin-bottom: 10px;
-                font-size: 25px;
-                color: #00a1de;
-                font-weight: 600;
-            }
-            
-            .haman_his_ul1 > li > dl dt::before {
-                content: "";
-                position: absolute;
-                left: 0;
-                top: 12px;
-                width: 5px;
-                height: 5px;
-                border: 4px solid #555;
-                border-radius: 100%;
-            }
-            
-            .haman_his_ul1 > li > dl dd {
-                padding-left: 30px;
-                padding-right: 0;
-            }
-            
-            .haman_his_ul1 > li > dl dd ul li {
-                position: relative;
-                padding-left: 15px;
-                padding-right: 0;
-                line-height: 160%;
-                font-size: 17px;
-                color: #333;
-                flex-direction: row;
-            }
-            
-            .haman_his_ul1 > li > dl dd ul li::before {
-                content: "";
-                position: absolute;
-                left: 0;
-                top: 12px;
-                width: 5px;
-                height: 5px;
-                border-radius: 100%;
-                background: #00a1de;
-            }
-            
-            .haman_his_ul1 > li > dl dd ul li strong {
-                min-width: 60px;
-            }
-            
-            .haman_his_ul1 > li:nth-child(odd) {
-                float: none;
-                margin-left: 8px;
-            }
-            
-            .haman_his_ul1 > li:nth-child(odd) > dl dt {
-                font-size: 25px;
-            }
-            
-            .haman_his_ul1 > li:nth-child(odd) > dl dd ul li {
-                font-size: 17px;
-            }
-        }
-        .haman_intro-content {
-            text-align: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 3rem 2rem;
-            border-radius: 15px;
-            margin: 0.2rem auto;
-            max-width: 1280px;
-        }
-        .haman_intro-content h3 {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            line-height: 1.4;
-        }
-        .haman_intro-content p {
-            font-size: 1.1rem;
-            color: #555;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.8;
+            .haman_main_title { padding-left: 18px; font-size: 20px; }
+            .haman_main_title::before { width: 12px; height: 12px; border: 4px solid #00a1de; }
+            .haman_history_list { margin-top: 20px; padding-top: 20px; }
+            .haman_history_list::before { left: 10px; transform: none; }
+            .haman_history_list::after { left: 0; transform: none; }
+            .haman_his_ul1::before { left: 15px; transform: none; }
+            .haman_his_ul1 > li { width: 100%; padding-top: 30px; margin-left: 8px; text-align: left; }
+            .haman_his_ul1 > li > dl dt { padding-left: 30px; font-size: 25px; }
+            .haman_his_ul1 > li > dl dt::before { left: 0; top: 12px; }
+            .haman_his_ul1 > li > dl dd { padding-left: 30px; }
+            .haman_his_ul1 > li > dl dd ul li { padding-left: 15px; font-size: 17px; }
+            .haman_his_ul1 > li > dl dd ul li::before { left: 0; top: 12px; }
+            .haman_his_ul1 > li > dl dd ul li strong { min-width: 60px; }
+            .haman_his_ul1 > li:nth-child(odd) { float: none; margin-left: 8px; }
+            .haman_his_ul1 > li:nth-child(odd) > dl dt { font-size: 25px; }
+            .haman_his_ul1 > li:nth-child(odd) > dl dd ul li { font-size: 17px; }
         }
     </style>
 </head>
-<body class="haman_body">
-    <div class="haman_intro-content">
-        <h3>
-            공공폐수처리시설, 용수시설 등 각종 기반시설을 효율적으로 관리하고, 업체간 정보제공과 <br>
-            입주업체의 건전한 육성발전을 위한 관리업무와 지원사업의 수행을 통해 입주기업의 경쟁력을 제공하고 <br>
-            회원 상호간의 친목과 종업원 복리증진 및 지역경제발전에 기여하고자 합니다.
-        </h3>
-    </div>
+<body>
     <div class="haman_container">
         <div class="haman_history">
             <div class="haman_history_list">
@@ -393,10 +65,7 @@
                                 <ul>
                                     <li>
                                         <strong>11월</strong>
-                                        <span>
-                                            함안일반산업단지 관리기본계획 변경 승인고시
-                                            <div style="font-size: 90%;">(제2024-512호)</div>
-                                        </span>
+                                        <span>함안일반산업단지 관리기본계획 변경 승인고시<div style="font-size: 90%;">(제2024-512호)</div></span>
                                     </li>
                                     <li>
                                         <strong>09월</strong>
@@ -417,10 +86,7 @@
                                 <ul>
                                     <li>
                                         <strong>01월</strong>
-                                        <span>
-                                            함안일반산업단지 준공인가 공고
-                                            <div style="font-size: 90%;">(경상남도공고 제2016-51호)</div>
-                                        </span>
+                                        <span>함안일반산업단지 준공인가 공고<div style="font-size: 90%;">(경상남도공고 제2016-51호)</div></span>
                                     </li>
                                 </ul>
                             </dd>
@@ -459,8 +125,7 @@
                                 <ul>
                                     <li>
                                         <strong>06월</strong>
-                                        <span>산업단지 지정(개발계획)고시 
-                                        <div style="font-size: 90%;">(경상남도 제2008-238호)</div></span>
+                                        <span>산업단지 지정(개발계획)고시 <div style="font-size: 90%;">(경상남도 제2008-238호)</div></span>
                                     </li>
                                 </ul>
                             </dd>
